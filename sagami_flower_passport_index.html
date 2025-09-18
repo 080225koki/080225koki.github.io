@@ -97,13 +97,7 @@
         <p>下の「クリアコード」を「ラス謎の答え」で見せてください。</p>
         <p><strong id="clearCode" style="font-size:20px;letter-spacing:.12em;"></strong></p>
       </div>
-
-      <details style="margin-top:14px">
-        <summary>主催者用リンク（QR作成に利用）</summary>
-        <div class="list" id="links"></div>
-        <p class="muted" style="margin-top:8px">※ これらのURLをQRコード化して各ポイントに掲示してください。<br>例）<code>?p=1</code>〜<code>?p=10</code> はパズル必須、<code>?claim=p1</code> は直獲得。</p>
-      </details>
-
+      
       <details>
         <summary>使い方</summary>
         <ol class="list">
@@ -387,7 +381,7 @@
   });
 
   // Init
-  buildLinks(); buildReview(); render(); handleParams();
+ buildReview(); render(); handleParams();
 })();
 </script>
 </body>
