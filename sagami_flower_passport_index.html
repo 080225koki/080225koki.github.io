@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>みんなで探そう 相模の花｜パスポート（ラス謎 表示のみ）</title>
+<style>
+  :root{--bg:#0b1020;--card:#10162b;--ink:#e9eefc;--muted:#9fb0da;--accent:#a6e3a1;--brand:#89b4fa}
+  *{box-sizing:border-box} html,body{height:100%}
+  body{margin:0;background:radial-gradient(1200px 800px at 80% -20%,#142143 0%,#0b1020 40%,#0b1020 100%);color:var(--ink);font-family:system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px 16px 64px}
+  header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:space-between;margin-bottom:16px}
+  .badge{font-size:12px;padding:4px 8px;border-radius:999px;background:rgba(137,180,250,.15);color:var(--brand);border:1px solid rgba(137,180,250,.35)}
+  .title{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .title h1{margin:0;font-size:clamp(20px,4vw,28px)}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,0));border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.05)}
+  .grid{display:grid;gap:16px}
+  @media(min-width:900px){.grid{grid-template-columns:1.1fr .9fr}}
+  .flower{display:grid;place-items:center;padding:16px;min-height:480px}
+  svg{width:100%;max-width:520px;height:auto}
+  .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  input[type="text"]{background:#0e1430;color:var(--ink);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 12px;font-size:14px;outline:none}
+  button{background:#17224a;color:var(--ink);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 12px;font-size:14px;cursor:pointer;transition:.2s ease transform,.2s ease background}
+  button:hover{transform:translateY(-1px);background:#1b2a58}
+  .btn-ghost{background:transparent;border-color:rgba(255,255,255,.25)}
+  .muted{color:var(--muted);font-size:13px}
+  .progressbar{height:10px;background:#0f1531;border:1px solid rgba(255,255,255,.1);border-radius:999px;overflow:hidden}
+  .progressbar>div{height:100%;width:0;background:linear-gradient(90deg,#a6e3a1,#89dceb,#cba6f7);transition:width .4s ease}
+  details{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;background:rgba(255,255,255,.02)}
+  details+details{margin-top:12px}
+  summary{cursor:pointer;font-weight:600}
+  code{background:#0f1636;border:1px solid rgba(255,255,255,.08);padding:2px 6px;border-radius:6px}
+  .toast{position:fixed;inset:auto 16px 16px 16px;margin-left:auto;max-width:520px;background:#0f1636;border:1px solid rgba(255,255,255,.12);color:var(--ink);padding:12px 14px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);display:none}
+  .toast.show{display:block;animation:fadein .2s ease}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .cert{display:none;text-align:center;padding:16px;border-radius:12px;border:1px dashed rgba(255,255,255,.15);background:rgba(166,227,161,.07)}
+  .cert.show{display:block} .cert h3{margin:8px 0}
+  .modalScrim{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+  .modal{max-width:900px;width:100%;max-height:90vh;overflow:auto;background:#10162b;border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:16px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+  .modal h3{margin-top:0}
+  .modal .club{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .modal .field{display:flex;gap:8px;align-items:center;margin-top:12px}
+  .hint{font-size:13px;color:var(--muted);margin-top:8px}
+  .prompt{font-size:14px;margin:8px 0;color:#d8e1ff}
+  .gallery{display:grid;gap:12px}
+  @media(min-width:720px){.gallery{grid-template-columns:1fr 1fr}}
+  figure{margin:0}
+  figure img{width:100%;height:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;display:block}
+  figure figcaption{font-size:12px;color:var(--muted);margin-top:6px}
+  .finalCard{display:none;margin-top:12px}
+  .finalCard.show{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">
+      <span class="badge">文化祭 宝探し</span>
+      <h1>みんなで探そう 相模の花｜パスポート（ラス謎 表示のみ）</h1>
+    </div>
+    <div class="controls">
+      <input id="nickname" type="text" placeholder="ニックネーム（任意）" />
+      <button id="saveName">保存</button>
+      <button id="reset">進捗リセット</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="card flower">
+      <svg viewBox="-120 -120 240 240" role="img" aria-label="相模の花">
+        <g id="petals"></g>
+        <circle cx="0" cy="0" r="22" fill="#f5e0dc" stroke="rgba(0,0,0,.25)" stroke-width="1"/>
+        <text x="0" y="4" text-anchor="middle" font-size="10" fill="#3b3355">相模の花</text>
+      </svg>
+    </section>
+
+    <section class="card">
+      <h2 style="margin-top:4px">進捗</h2>
+      <div class="muted" id="progressText">0 / 10 花びら</div>
+      <div class="progressbar" style="margin:8px 0 14px"><div id="bar"></div></div>
+
+      <!-- Final puzzle card (unlocked at 10/10) -->
+      <div id="finalSection" class="finalCard card">
+        <h3>🌸 ラス謎（Web表示のみ）</h3>
+        <img id="finalImage" src="" alt="ラス謎の画像" style="max-width:100%;border:1px solid rgba(255,255,255,.12);border-radius:12px">
+        <div class="field" style="margin-top:12px">
+          <button id="toggleFinalHint" class="btn-ghost">ヒントを見る</button>
+          <button id="openReview" class="btn-ghost">これまでの謎を見る</button>
+        </div>
+        <div id="finalHint" class="hint" style="display:none"></div>
+        <p class="muted" style="margin-top:8px">※ ラス謎の解答は「ラス謎の答え」で。Webでは判定しません。</p>
+      </div>
+
+      <div id="cert" class="cert">
+        <h3>🎉 コンプリート！</h3>
+        <div class="muted" id="certName"></div>
+        <p>下の「クリアコード」を「ラス謎の答え」で見せてください。</p>
+        <p><strong id="clearCode" style="font-size:20px;letter-spacing:.12em;"></strong></p>
+      </div>
+
+      <details style="margin-top:14px">
+        <summary>主催者用リンク（QR作成に利用）</summary>
+        <div class="list" id="links"></div>
+        <p class="muted" style="margin-top:8px">※ これらのURLをQRコード化して各ポイントに掲示してください。<br>例）<code>?p=1</code>〜<code>?p=10</code> はパズル必須、<code>?claim=p1</code> は直獲得。</p>
+      </details>
+
+      <details>
+        <summary>使い方</summary>
+        <ol class="list">
+          <li>このHTMLを公開（GitHub Pages / Netlify 等）。</li>
+          <li>各ポイントのQR＝公開URL + <code>?p=1</code> 〜 <code>?p=10</code>。</li>
+          <li>参加者は点に着くとモーダルで答えを入力。正解で花びら獲得。</li>
+          <li>10枚集めるとラス謎（画像）と「過去の謎を見る」ボタンが解放。<br>ラス謎の判定は受付で実施します（Web判定なし）。</li>
+        </ol>
+        <p class="muted">※ 普通の謎は紙で掲示。Webは「答え入力＋（任意で）ヒント」だけで運用可能。</p>
+      </details>
+    </section>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<!-- Past puzzles (review) modal -->
+<div id="reviewScrim" class="modalScrim" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal">
+    <h3>これまでの謎</h3>
+    <p class="muted">各団体で掲示された謎の画像（復習用）。</p>
+    <div id="reviewGallery" class="gallery"></div>
+    <div class="field"><button id="closeReview">閉じる</button></div>
+  </div>
+</div>
+
+<!-- Answer modal for normal points -->
+<div id="scrim" class="modalScrim" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal">
+    <div class="club" id="modalClub"></div>
+    <h3 id="modalTitle"></h3>
+    <div id="modalPrompt" class="prompt" style="display:none"></div>
+    <div class="field" style="margin-top:0">
+      <button id="toggleHint" class="btn-ghost">ヒントを見る</button>
+    </div>
+    <div class="hint" id="modalHint" style="display:none"></div>
+    <div class="field">
+      <input id="answer" type="text" placeholder="ここに答えを入力" />
+      <button id="submitAnswer">答える</button>
+      <button id="closeModal">閉じる</button>
+    </div>
+    <div class="hint" id="feedback" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const PETAL_COUNT = 10;
+  const PALETTE = ["#f38ba8","#fab387","#f9e2af","#a6e3a1","#94e2d5","#89dceb","#b4befe","#cba6f7","#f5c2e7","#f2cdcd"];
+  const STORAGE_KEY = "sagamiFlower.final.display.inline";
+  const CLEAR_SALT = "SAGAMI25DISPLAYINLINE";
+  const SHOW_PROMPT = false; // 普通謎の本文をサイトに出す場合 true
+
+  // ★ ラス謎（Web表示のみ）
+  const FINAL_IMAGE = "final_puzzle.png"; // 同フォルダ or 外部URL
+  const FINAL_HINT  = "ヒント例：これまでの“花びら”から読み取れる共通点に注目。";
+
+  // ★ 普通の謎（紙掲示）— Web側は答え判定のみ。hint は任意。
+  const PUZZLES = [{"id": 1, "club": "書道部", "title": "第1の花びら", "prompt": "", "hint": "「生」って字にはいろんな読み方あるよね", "answer_hashes": [2727450628]}, {"id": 2, "club": "鉄道研究同好会", "title": "第2の花びら", "prompt": "", "hint": "上と下で色を対応させよう", "answer_hashes": [602862285]}, {"id": 3, "club": "化学部", "title": "第3の花びら", "prompt": "", "hint": "", "answer_hashes": [213775345]}, {"id": 4, "club": "文芸部", "title": "第4の花びら", "prompt": "", "hint": "カタカナでもOK", "answer_hashes": [213781051, 214943021]}, {"id": 5, "club": "美術部", "title": "第5の花びら", "prompt": "", "hint": "", "answer_hashes": [213682668]}, {"id": 6, "club": "囲碁将棋部", "title": "第6の花びら", "prompt": "", "hint": "", "answer_hashes": [214466852]}, {"id": 7, "club": "華道同好会", "title": "第7の花びら", "prompt": "", "hint": "", "answer_hashes": [213801658]}, {"id": 8, "club": "生物部", "title": "第8の花びら", "prompt": "", "hint": "", "answer_hashes": [2939599442]}, {"id": 9, "club": "写真部", "title": "第9の花びら", "prompt": "", "hint": "", "answer_hashes": [214617677]}, {"id": 10, "club": "物理部", "title": "第10の花びら", "prompt": "", "hint": "", "answer_hashes": [2325878309]}];
+
+  // ★ 復習画像（10枚）。同フォルダに p1.png...p10.png を置く想定（外部URLでもOK）
+  const REVIEW_IMAGES = [{"src": "p1.png", "caption": "第1の謎（書道部）"}, {"src": "p2.png", "caption": "第2の謎（鉄道研究同好会）"}, {"src": "p3.png", "caption": "第3の謎（化学部）"}, {"src": "p4.png", "caption": "第4の謎（文芸部）"}, {"src": "p5.png", "caption": "第5の謎（美術部）"}, {"src": "p6.png", "caption": "第6の謎（囲碁将棋部）"}, {"src": "p7.png", "caption": "第7の謎（華道同好会）"}, {"src": "p8.png", "caption": "第8の謎（生物部）"}, {"src": "p9.png", "caption": "第9の謎（写真部）"}, {"src": "p10.png", "caption": "第10の謎（物理部）"}];
+
+  // Build petals
+  const g = document.getElementById('petals');
+  for(let i=0;i<PETAL_COUNT;i++){
+    const petal = document.createElementNS("http://www.w3.org/2000/svg","ellipse");
+    petal.setAttribute("cx", 0);
+    petal.setAttribute("cy", -35);
+    petal.setAttribute("rx", 18);
+    petal.setAttribute("ry", 36);
+    petal.setAttribute("transform", `rotate(${(i*360/PETAL_COUNT)})`);
+    petal.setAttribute("id", `petal-${i+1}`);
+    petal.setAttribute("fill", "#1a2042");
+    petal.setAttribute("stroke", "rgba(255,255,255,.15)");
+    petal.setAttribute("stroke-width", "1");
+    g.appendChild(petal);
+  }
+
+  // State
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : { name:"", collected:Array(PETAL_COUNT).fill(false) };
+    }catch(e){ return { name:"", collected:Array(PETAL_COUNT).fill(false) }; }
+  }
+  function save(st){ localStorage.setItem(STORAGE_KEY, JSON.stringify(st)); }
+  function setName(n){ const st = load(); st.name = (n||"").trim(); save(st); render(); }
+  function collect(idx){
+    const st = load();
+    if(!st.collected[idx]){
+      st.collected[idx] = true; save(st); showToast(`🌸 花びら ${idx+1} を獲得！`);
+    }else{ showToast(`（花びら ${idx+1} はもう集めています）`); }
+    render();
+  }
+  function reset(){
+    if(confirm("進捗をリセットしますか？")){
+      save({ name:"", collected:Array(PETAL_COUNT).fill(false) });
+      render();
+      showToast("進捗をリセットしました");
+    }
+  }
+  function hiraKanaNormalize(s){
+    if(!s) return "";
+    s = s.toString().trim().normalize("NFKC");
+    s = Array.from(s).map(ch => {
+      const code = ch.charCodeAt(0);
+      if(code>=0x30A1 && code<=0x30F6){ return String.fromCharCode(code - 0x60); }
+      return ch;
+    }).join("");
+    return s.toLowerCase();
+  }
+  function hash131(s){
+    let x = 0>>>0; for(let i=0;i<s.length;i++){ x = (x*131 + s.charCodeAt(i))>>>0; } return x>>>0;
+  }
+  function clearCode(st){
+    const s = st.collected.map(b=>b?1:0).join("") + "|" + (st.name||"") + "|" + CLEAR_SALT;
+    let h = 0; for(let i=0;i<s.length;i++){ h = (h*131 + s.charCodeAt(i))>>>0; }
+    const code = "SGM-" + (st.name||"GUEST").toUpperCase().slice(0,4).padEnd(4,"X") + "-" + (""+h).slice(-6).padStart(6,"0");
+    return code;
+  }
+
+  // Render
+  const finalSection = document.getElementById("finalSection");
+  const finalImage = document.getElementById("finalImage");
+  const finalHint = document.getElementById("finalHint");
+  const cert = document.getElementById("cert");
+
+  function render(){
+    const st = load();
+    const total = st.collected.filter(Boolean).length;
+    for(let i=0;i<PETAL_COUNT;i++){
+      const el = document.getElementById(`petal-${i+1}`);
+      el.setAttribute("fill", st.collected[i] ? PALETTE[i%PALETTE.length] : "#1a2042");
+    }
+    document.getElementById("progressText").textContent = `${total} / ${PETAL_COUNT} 花びら`;
+    document.getElementById("bar").style.width = `${Math.round(100*total/PETAL_COUNT)}%`;
+
+    cert.classList.remove("show");
+    finalSection.classList.remove("show");
+
+    if(total === PETAL_COUNT){
+      // ラス謎（画像）を解放（表示のみ）
+      finalImage.src = FINAL_IMAGE;
+      finalHint.textContent = FINAL_HINT || "";
+      finalHint.style.display = "none";
+      finalSection.classList.add("show");
+
+      // 同時にクリアコードも表示（判定は不要）
+      document.getElementById("certName").textContent = st.name ? `達成者：${st.name}` : "達成者：GUEST";
+      document.getElementById("clearCode").textContent = clearCode(st);
+      cert.classList.add("show");
+    }
+
+    document.getElementById("nickname").value = st.name || "";
+  }
+
+  // Toast
+  let hideTimer=null;
+  function showToast(msg){ const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(hideTimer); hideTimer = setTimeout(()=> t.classList.remove("show"), 2500); }
+
+  // Organizer links
+  function buildLinks(){
+    const base = location.origin + location.pathname;
+    const list = []; for(let i=1;i<=PETAL_COUNT;i++){ list.push({i, urlPuzzle: `${base}?p=${i}`, urlClaim: `${base}?claim=p${i}`}); }
+    const box = document.getElementById("links");
+    box.innerHTML = list.map(o=>`<div>第${o.i}の花びら： <code>${o.urlPuzzle}</code>（パズル） / <code>${o.urlClaim}</code>（直獲得）</div>`).join("");
+  }
+
+  // Build review gallery
+  const reviewGallery = document.getElementById("reviewGallery");
+  function buildReview(){
+    reviewGallery.innerHTML = REVIEW_IMAGES.map((it,idx)=>`<figure><img loading="lazy" src="${it.src}" alt="${it.caption}"><figcaption>第${idx+1}の謎 — ${it.caption}</figcaption></figure>`).join("");
+  }
+
+  // Normal puzzle modal
+  const scrim = document.getElementById('scrim');
+  const modalClub = document.getElementById('modalClub');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalPrompt = document.getElementById('modalPrompt');
+  const modalHint = document.getElementById('modalHint');
+  const toggleHintBtn = document.getElementById('toggleHint');
+  const answerInput = document.getElementById('answer');
+  const feedback = document.getElementById('feedback');
+  let currentPuzzleIndex = -1;
+
+  function openPuzzle(idx){
+    const p = PUZZLES[idx];
+    if(!p){ showToast("この花びらは存在しません"); return; }
+    currentPuzzleIndex = idx;
+    modalClub.textContent = p.club;
+    modalTitle.textContent = p.title;
+
+    if(SHOW_PROMPT && p.prompt){
+      modalPrompt.style.display = "block";
+      modalPrompt.textContent = p.prompt;
+    }else{
+      modalPrompt.style.display = "none";
+      modalPrompt.textContent = "";
+    }
+
+    if(p.hint && p.hint.trim()!==""){
+      toggleHintBtn.style.display = "inline-block";
+      toggleHintBtn.textContent = "ヒントを見る";
+      modalHint.textContent = p.hint;
+      modalHint.style.display = "none";
+    }else{
+      toggleHintBtn.style.display = "none";
+      modalHint.textContent = "";
+      modalHint.style.display = "none";
+    }
+
+    feedback.style.display = "none";
+    answerInput.value = "";
+    scrim.style.display = "flex";
+    answerInput.focus();
+  }
+  function closePuzzle(){ scrim.style.display = "none"; currentPuzzleIndex = -1; }
+  function submitAnswer(){
+    if(currentPuzzleIndex<0) return;
+    const p = PUZZLES[currentPuzzleIndex];
+    const val = hiraKanaNormalize(answerInput.value);
+    const ok = p.answer_hashes.includes(hash131(val));
+    if(ok){
+      feedback.style.display = "block"; feedback.textContent = "正解！花びらを獲得しました。";
+      collect(currentPuzzleIndex);
+      setTimeout(closePuzzle, 600);
+    }else{
+      feedback.style.display = "block"; feedback.textContent = "ちがうみたい… ヒントを見てもう一度！";
+    }
+  }
+
+  document.getElementById("submitAnswer").addEventListener("click", submitAnswer);
+  document.getElementById("closeModal").addEventListener("click", closePuzzle);
+  document.getElementById("toggleHint").addEventListener("click", ()=>{
+    if(modalHint.style.display==="none"){
+      modalHint.style.display="block"; toggleHintBtn.textContent = "ヒントを隠す";
+    }else{
+      modalHint.style.display="none"; toggleHintBtn.textContent = "ヒントを見る";
+    }
+  });
+
+  // Final (display only): hint toggle & review open
+  document.getElementById("toggleFinalHint").addEventListener("click", ()=>{
+    if(finalHint.style.display==="none"){
+      finalHint.style.display="block";
+      document.getElementById("toggleFinalHint").textContent = "ヒントを隠す";
+    }else{
+      finalHint.style.display="none";
+      document.getElementById("toggleFinalHint").textContent = "ヒントを見る";
+    }
+  });
+  const reviewScrim = document.getElementById("reviewScrim");
+  document.getElementById("openReview").addEventListener("click", ()=>{ reviewScrim.style.display = "flex"; });
+  document.getElementById("closeReview").addEventListener("click", ()=>{ reviewScrim.style.display = "none"; });
+
+  // Query handling
+  function handleParams(){
+    const q = new URLSearchParams(location.search);
+    const p = q.get("p");
+    const claim = q.get("claim");
+    if(p){
+      const idx = parseInt(p,10)-1; openPuzzle(idx); history.replaceState({}, "", location.origin + location.pathname);
+    }else if(claim){
+      const m = /^p([1-9]|10)$/.exec(claim||"");
+      if(m){ const idx = parseInt(m[1],10)-1; collect(idx); history.replaceState({}, "", location.origin + location.pathname); }
+    }
+  }
+
+  // Name & Reset
+  document.getElementById("reset").addEventListener("click", reset);
+  document.getElementById("saveName").addEventListener("click", ()=> setName(document.getElementById("nickname").value));
+
+  // Keyboard
+  window.addEventListener("keydown", (e)=>{
+    const scrimVisible = document.getElementById("scrim").style.display==="flex";
+    const reviewVisible = document.getElementById("reviewScrim").style.display==="flex";
+    if(e.key==="Enter" && scrimVisible){ submitAnswer(); }
+    if(e.key==="Escape" && scrimVisible){ closePuzzle(); }
+    if(e.key==="Escape" && reviewVisible){ reviewScrim.style.display="none"; }
+  });
+
+  // Init
+  buildLinks(); buildReview(); render(); handleParams();
+})();
+</script>
+</body>
+</html>
