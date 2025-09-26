@@ -90,14 +90,6 @@
         <div id="finalHint" class="hint" style="display:none"></div>
         <p class="muted" style="margin-top:8px">※ ラス謎の解答は「ラス謎の答え」で。Webでは判定しません。</p>
       </div>
-
-     <div id="cert" class="cert">
-        <h3>🎉 コンプリート！</h3>
-        <div class="muted" id="certName"></div>
-        <p>下の「クリアコード」を「ラス謎の答え」で見せてください。</p>
-        <p><strong id="clearCode" style="font-size:20px;letter-spacing:.12em;"></strong></p>
-      </div>
-      
     </section>
   </div>
 </div>
@@ -137,8 +129,7 @@
 (function(){
   const PETAL_COUNT = 10;
   const PALETTE = ["#f38ba8","#fab387","#f9e2af","#a6e3a1","#94e2d5","#89dceb","#b4befe","#cba6f7","#f5c2e7","#f2cdcd"];
-  const STORAGE_KEY = "sagamiFlower.final.display.inline";
-  const CLEAR_SALT = "SAGAMI25DISPLAYINLINE";
+  const STORAGE_KEY = "sagamiFlower.final.display.inline"
   const SHOW_PROMPT = false; // 普通謎の本文をサイトに出す場合 true
 
   // ★ ラス謎（Web表示のみ）
@@ -202,12 +193,6 @@
   }
   function hash131(s){
     let x = 0>>>0; for(let i=0;i<s.length;i++){ x = (x*131 + s.charCodeAt(i))>>>0; } return x>>>0;
-  }
-  function clearCode(st){
-    const s = st.collected.map(b=>b?1:0).join("") + "|" + (st.name||"") + "|" + CLEAR_SALT;
-    let h = 0; for(let i=0;i<s.length;i++){ h = (h*131 + s.charCodeAt(i))>>>0; }
-    const code = "SGM-" + (st.name||"GUEST").toUpperCase().slice(0,4).padEnd(4,"X") + "-" + (""+h).slice(-6).padStart(6,"0");
-    return code;
   }
 
   // Render
