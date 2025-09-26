@@ -198,36 +198,31 @@
   const finalSection = document.getElementById("finalSection");
   const finalImage = document.getElementById("finalImage");
   const finalHint = document.getElementById("finalHint");
-  const cert = document.getElementById("cert");
 
-  function render(){
-    const st = load();
-    const total = st.collected.filter(Boolean).length;
-    for(let i=0;i<PETAL_COUNT;i++){
-      const el = document.getElementById(`petal-${i+1}`);
-      el.setAttribute("fill", st.collected[i] ? PALETTE[i%PALETTE.length] : "#1a2042");
-    }
-    document.getElementById("progressText").textContent = `${total} / ${PETAL_COUNT} 花びら`;
-    document.getElementById("bar").style.width = `${Math.round(100*total/PETAL_COUNT)}%`;
+function render(){
+  const st = load();
+  const total = st.collected.filter(Boolean).length;
 
-    cert.classList.remove("show");
-    finalSection.classList.remove("show");
-
-    if(total === PETAL_COUNT){
-      // ラス謎（画像）を解放（表示のみ）
-      finalImage.src = FINAL_IMAGE;
-      finalHint.textContent = FINAL_HINT || "";
-      finalHint.style.display = "none";
-      finalSection.classList.add("show");
-
-      // 同時にクリアコードも表示（判定は不要）
-      document.getElementById("certName").textContent = st.name ? `達成者：${st.name}` : "達成者：GUEST";
-      document.getElementById("clearCode").textContent = clearCode(st);
-      cert.classList.add("show");
-    }
-
-    document.getElementById("nickname").value = st.name || "";
+  for(let i=0;i<PETAL_COUNT;i++){
+    const el = document.getElementById(`petal-${i+1}`);
+    el.setAttribute("fill", st.collected[i] ? PALETTE[i%PALETTE.length] : "#1a2042");
   }
+  document.getElementById("progressText").textContent = `${total} / ${PETAL_COUNT} 花びら`;
+  document.getElementById("bar").style.width = `${Math.round(100*total/PETAL_COUNT)}%`;
+
+  // クリアコード関連の表示は一切なし
+  finalSection.classList.remove("show");
+
+  if(total === PETAL_COUNT){
+    // ラス謎（画像）だけ解放
+    finalImage.src = FINAL_IMAGE;
+    finalHint.textContent = FINAL_HINT || "";
+    finalHint.style.display = "none";
+    finalSection.classList.add("show");
+  }
+
+  document.getElementById("nickname").value = st.name || "";
+}
 
   // Toast
   let hideTimer=null;
